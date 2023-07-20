@@ -1,27 +1,55 @@
 // userRoutes.js
 
 const express = require('express');
-const Job = require('../skills_jobs/job'); // Import the Job model
-const Skill = require('../skills_jobs/skill'); // Import the Skill model
+const Job = require('../models/job'); // Import the Job model
+const Skill = require('../models/skill'); // Import the Skill model
+const User=require('../models/User')
 const router = express.Router();
 
-// Get job postings based on user skills
-router.get('/jobs/:userId', async (req, res) => {
+// Route to get job recommendations for a user based on their skills
+router.get('/job-recommendations/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    // Assuming you have a way to get the user's skills
-    const userSkills = ['Skill 1', 'Skill 2', 'Skill 3'];
+    // Find the user by ID
+    const user = await User.findById(userId).populate('skills'); // Populate the skills field in user document
 
-    // Find the Skill IDs for the user's skills
-    const skillIds = await Skill.find({ name: { $in: userSkills } }, '_id');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-    // Find job postings that require any of the user's skills
-    const jobs = await Job.find({ requiredSkills: { $in: skillIds } });
+    // Get the user's skill IDs
+    const userSkillIds = user.skills.map(skill => skill._id);
 
-    res.json({ jobs });
+    // Find job postings that require at least one of the user's skills
+    const jobRecommendations = await Job.find({ requiredSkills: { $in: userSkillIds } });
+
+    res.json({ jobRecommendations });
   } catch (error) {
-    res.status(500).json({ message: 'Error occurred while fetching job postings', error: error.message });
+    res.status(500).json({ message: 'Error occurred while fetching job recommendations', error: error.message });
+  }
+});
+
+// Route to update the skills of a user
+router.put('/users/:userId/skills', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { skills } = req.body;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update the user's skills
+    user.skills = skills;
+    await user.save();
+
+    res.json({ message: 'User skills updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error occurred while updating user skills', error: error.message });
   }
 });
 

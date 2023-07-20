@@ -3,11 +3,13 @@ const bodyParser = require('body-parser');
 const config = require('./config');
 const passport=require('./config/Passport')
 const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/adminroutes');
+const userRoutes = require('./routes/userRoutes');
 const app = express();
 app.use(bodyParser.json());
 app.use('/auth', authRoutes);
-app.use('/adminroutes', authRoutes);
-app.use('/userRoutes', authRoutes);
+app.use('/adminroutes', adminRoutes);
+app.use('/userRoutes', userRoutes);
 app.use(passport.initialize());
 const port = 3000;
 
