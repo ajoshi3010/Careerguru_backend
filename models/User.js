@@ -3,6 +3,7 @@ const connectDB = require('../config/db');
 const bcrypt = require('bcrypt');
 connectDB();
 
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -18,12 +19,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  skills: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Skill',
-    },
-  ],
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+  // Add any additional fields you need for users
 });
 
 userSchema.pre('save', async function (next) {
