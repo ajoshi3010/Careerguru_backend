@@ -31,6 +31,7 @@ router.get('/job-recommendations/:userId', async (req, res) => {
 });
 
 // Route to update the skills of a user
+
 router.put('/users/:userId/skills', async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -43,8 +44,19 @@ router.put('/users/:userId/skills', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update the user's skills
-    user.skills = skills;
+    // Find or create the Skill documents based on the skill names provided
+    const skillDocuments = await Promise.all(
+      skills.map(async (skillName) => {
+        let skill = await Skill.findOne({ name: skillName });
+        if (!skill) {
+          skill = await Skill.create({ name: skillName });
+        }
+        return skill;
+      })
+    );
+
+    // Update the user's skills with the ObjectIds of the found or created Skill documents
+    user.skills = skillDocuments.map((skill) => skill._id);
     await user.save();
 
     res.json({ message: 'User skills updated successfully', user });
@@ -52,5 +64,6 @@ router.put('/users/:userId/skills', async (req, res) => {
     res.status(500).json({ message: 'Error occurred while updating user skills', error: error.message });
   }
 });
+
 
 module.exports = router;
