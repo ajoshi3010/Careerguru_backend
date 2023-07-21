@@ -10,10 +10,10 @@ const router = express.Router();
 router.get('/job-recommendations/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
-
+    console.log(userId)
     // Find the user by ID
     const user = await User.findById(userId).populate('skills'); // Populate the skills field in user document
-
+    console.log("I am here")
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

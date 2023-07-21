@@ -7,19 +7,22 @@ const { secretKey } = require('../keys');
 const router=express.Router();
 router.post('/signup', async (req, res) => {
   try {
-    const { username, email, password, skills } = req.body;
 
+    const { username, email, password, skills } = req.body;
+    const userSkillIds = skills.map(skill => skill._id);
+    console.log(req.body)
     // Create a new user with the provided username, email, and password
     const newUser = new User({
       username,
       email,
       password,
-      skills: skills || [], // Make the skills field optional, default to an empty array if not provided
+      userSkillIds // Make the skills field optional, default to an empty array if not provided
     });
-
+    console.log("Hello after new user");
     // Save the new user to the database
     await newUser.save();
-
+    console.log(newUser);
+    console.log("hello after save")
     res.json({ message: 'User signup successful', user: newUser });
   } catch (error) {
     res.status(500).json({ message: 'Error occurred during user signup', error: error.message });

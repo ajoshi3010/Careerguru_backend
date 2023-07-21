@@ -9,14 +9,14 @@ const isAdmin = (req, res, next) => {
 };
 
 // Middleware to check if the user is authenticated (optional)
-const isAuthenticated = (req, res, next) => {
-    if (!req.user) {
-        return res.status(401).json({ message: 'Unauthorized. Please log in first.' });
-    }
-    next();
-};
+// const isAuthenticated = (req, res, next) => {
+//     if (!req.user) {
+//         return res.status(401).json({ message: 'Unauthorized. Please log in first.' });
+//     }
+//     next();
+// };
 
 module.exports = {
     isAdmin,
-    isAuthenticated,
+    // isAuthenticated,
 };

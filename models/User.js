@@ -23,6 +23,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  skills: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Skill',
+    },
+  ],
   // Add any additional fields you need for users
 });
 
